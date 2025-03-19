@@ -281,6 +281,8 @@ export default function WeatherApp() {
       const dailyForecastData = weatherData.daily.time.map((time, index) => ({
         time: time,
         temperature_2m: weatherData.daily.temperature_2m_max[index],
+        temperature_2m_min: weatherData.daily.temperature_2m_min[index],
+        temperature_2m_max: weatherData.daily.temperature_2m_max[index],
         weather_code: weatherData.daily.weather_code[index],
         wind_speed_10m: 0 // Daily forecast doesn't include wind speed
       }));

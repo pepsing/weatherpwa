@@ -7,6 +7,8 @@ import { getWeatherDescription } from "@/lib/utils"
 interface ForecastItem {
   time: string
   temperature_2m: number
+  temperature_2m_min?: number
+  temperature_2m_max?: number
   weather_code: number
   wind_speed_10m: number
 }
@@ -81,7 +83,18 @@ export default function ForecastList({ forecast, type }: ForecastListProps) {
                 <div className="text-sm text-muted-foreground">
                   {item.wind_speed_10m} {t.windUnit}
                 </div>
-                <div className="text-xl font-bold">{Math.round(item.temperature_2m)}°C</div>
+                <div className="text-xl font-bold">
+                  {type === "daily" ? (
+                    <>
+                      <span className="text-red-500">{Math.round(item.temperature_2m_max || item.temperature_2m)}°</span>
+                      <span className="mx-1">/</span>
+                      <span className="text-blue-500">{Math.round(item.temperature_2m_min || item.temperature_2m)}°</span>
+                      <span>C</span>
+                    </>
+                  ) : (
+                    <>{Math.round(item.temperature_2m)}°C</>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>
