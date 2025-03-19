@@ -35,9 +35,10 @@ export default function WeatherCard({ weather }: WeatherCardProps) {
   }
 
   const formatTime = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleTimeString([], {
+    return new Date(timestamp * 1000).toLocaleString([], {
       hour: "2-digit",
       minute: "2-digit",
+      hour12: false
     })
   }
 

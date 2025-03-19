@@ -157,32 +157,17 @@ export default function WeatherApp() {
           // Create a key for the current location
           const currentLocationKey = "CurrentLocation"
 
-          // Check if we already have this location data stored
-          if (savedLocationData[currentLocationKey]) {
-            // Update the stored current location with new coordinates
-            const updatedLocationData = {
-              ...savedLocationData,
-              [currentLocationKey]: {
-                name: t.currentLocation,
-                latitude,
-                longitude,
-              },
-            }
-            setSavedLocationData(updatedLocationData)
-            localStorage.setItem("savedLocationData", JSON.stringify(updatedLocationData))
-          } else {
-            // Store current location data
-            const updatedLocationData = {
-              ...savedLocationData,
-              [currentLocationKey]: {
-                name: t.currentLocation,
-                latitude,
-                longitude,
-              },
-            }
-            setSavedLocationData(updatedLocationData)
-            localStorage.setItem("savedLocationData", JSON.stringify(updatedLocationData))
+          // Update or store current location data
+          const updatedLocationData = {
+            ...savedLocationData,
+            [currentLocationKey]: {
+              name: t.currentLocation,
+              latitude,
+              longitude,
+            },
           }
+          setSavedLocationData(updatedLocationData)
+          localStorage.setItem("savedLocationData", JSON.stringify(updatedLocationData))
 
           fetchWeatherByCoords(latitude, longitude, t.currentLocation)
         },
@@ -249,29 +234,65 @@ export default function WeatherApp() {
       }
 
       // Format forecast data
+      const hourlyForecast = weatherData.hourly.time.map((time: string, index: number) => ({
+        dt: new Date(time).getTime() / 1000,
+        main: {
+          temp: weatherData.hourly.temperature_2m[index],
+          feels_like: weatherData.hourly.apparent_temperature[index],
+          humidity: weatherData.hourly.relative_humidity_2m[index],
+        },
+        weather: [
+          {
+            main: getWeatherDescription(weatherData.hourly.weather_code[index], language),
+            description: getWeatherDescription(weatherData.hourly.weather_code[index], language).toLowerCase(),
+            icon: getWeatherIcon(weatherData.hourly.weather_code[index]),
+          },
+        ],
+        wind: {
+          speed: weatherData.hourly.wind_speed_10m[index],
+        },
+      }))
+
+      // Format daily forecast data
+      const dailyForecast = weatherData.daily.time.map((time: string, index: number) => ({
+        dt: new Date(time).getTime() / 1000,
+        main: {
+          temp: weatherData.daily.temperature_2m_max[index],
+          temp_min: weatherData.daily.temperature_2m_min[index],
+          temp_max: weatherData.daily.temperature_2m_max[index],
+        },
+        weather: [
+          {
+            main: getWeatherDescription(weatherData.daily.weather_code[index], language),
+            description: getWeatherDescription(weatherData.daily.weather_code[index], language).toLowerCase(),
+            icon: getWeatherIcon(weatherData.daily.weather_code[index]),
+          },
+        ],
+      }))
+
+      const now = Math.floor(Date.now() / 1000);
+      const hourlyForecastData = weatherData.hourly.time.map((time, index) => ({
+        time: time,
+        temperature_2m: weatherData.hourly.temperature_2m[index],
+        weather_code: weatherData.hourly.weather_code[index],
+        wind_speed_10m: weatherData.hourly.wind_speed_10m[index]
+      }));
+
+      const dailyForecastData = weatherData.daily.time.map((time, index) => ({
+        time: time,
+        temperature_2m: weatherData.daily.temperature_2m_max[index],
+        weather_code: weatherData.daily.weather_code[index],
+        wind_speed_10m: 0 // Daily forecast doesn't include wind speed
+      }));
+
       const forecastData = {
-        list: weatherData.hourly.time.map((time: string, index: number) => ({
-          dt: new Date(time).getTime() / 1000,
-          main: {
-            temp: weatherData.hourly.temperature_2m[index],
-            feels_like: weatherData.hourly.apparent_temperature[index],
-            humidity: weatherData.hourly.relative_humidity_2m[index],
-          },
-          weather: [
-            {
-              main: getWeatherDescription(weatherData.hourly.weather_code[index], language),
-              description: getWeatherDescription(weatherData.hourly.weather_code[index], language).toLowerCase(),
-              icon: getWeatherIcon(weatherData.hourly.weather_code[index]),
-            },
-          ],
-          wind: {
-            speed: weatherData.hourly.wind_speed_10m[index],
-          },
-        })),
+        hourly: hourlyForecastData,
+        daily: dailyForecastData
       }
 
       setCurrentWeather(formattedWeather)
       setCurrentLocation(locationName)
+      console.log("Forecast data received:", forecastData)
       setForecast(forecastData)
       setLoading(false)
       // Clear search results
@@ -456,7 +477,7 @@ export default function WeatherApp() {
         getCurrentLocationWeather()
       }
     }
-  }, [language])
+  }, [language, t.currentLocation])
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 p-4 md:p-8">
@@ -557,15 +578,10 @@ export default function WeatherApp() {
                     <TabsTrigger value="daily">{t.dailyForecast}</TabsTrigger>
                   </TabsList>
                   <TabsContent value="hourly">
-                    {forecast && <ForecastList forecast={forecast.list.slice(0, 24)} type="hourly" />}
+                    {forecast && <ForecastList forecast={forecast.hourly} type="hourly" />}
                   </TabsContent>
                   <TabsContent value="daily">
-                    {forecast && (
-                      <ForecastList
-                        forecast={forecast.list.filter((_: any, i: number) => i % 8 === 0).slice(0, 5)}
-                        type="daily"
-                      />
-                    )}
+                    {forecast && <ForecastList forecast={forecast.daily} type="daily" />}
                   </TabsContent>
                 </Tabs>
               </div>
