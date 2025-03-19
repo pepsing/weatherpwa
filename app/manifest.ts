@@ -11,10 +11,10 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#3b82f6",
     icons: [
       {
-        src: "/icons/icon-192x192.png",
+        src: "/icons/icon-192x192.svg",
         sizes: "192x192",
-        type: "image/png",
-        purpose: "any",
+        type: "image/svg+xml",
+        purpose: "any maskable",
       },
       {
         src: "/icons/icon-512x512.svg",
@@ -22,8 +22,29 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/svg+xml",
         purpose: "any",
       },
+      {
+        src: "/icons/icon-192x192.svg",
+        sizes: "192x192",
+        type: "image/svg+xml",
+        purpose: "maskable",
+      },
     ],
-    form_factor: "wide",
+    screenshots: [
+      {
+        src: "/screenshots/desktop.png",
+        sizes: "1280x800",
+        type: "image/png",
+        form_factor: "wide",
+        label: "SkyView Weather on desktop"
+      },
+      {
+        src: "/screenshots/mobile.png",
+        sizes: "390x844",
+        type: "image/png",
+        form_factor: "narrow",
+        label: "SkyView Weather on mobile"
+      }
+    ],
   }
 }
 
