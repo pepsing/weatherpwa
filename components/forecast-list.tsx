@@ -37,9 +37,13 @@ export default function ForecastList({ forecast, type }: ForecastListProps) {
       : date.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" })
   }
 
+  const filteredForecast = type === "hourly"
+    ? forecast.filter(item => item.dt > Math.floor(Date.now() / 1000))
+    : forecast
+
   return (
     <div className="grid grid-cols-1 gap-4">
-      {forecast.map((item, index) => (
+      {filteredForecast.map((item, index) => (
         <Card key={index} className="w-full">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
