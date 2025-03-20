@@ -12,6 +12,8 @@ import WeatherCard from "@/components/weather-card"
 import ForecastList from "@/components/forecast-list"
 import SavedLocations from "@/components/saved-locations"
 import LanguageSwitcher from "@/components/language-switcher"
+import InstallPrompt from "@/components/install-prompt"
+import TemperatureChart from "@/components/temperature-chart"
 import { useLanguage } from "@/contexts/language-context"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
@@ -488,6 +490,7 @@ export default function WeatherApp() {
           <h1 className="text-2xl md:text-3xl font-bold text-blue-700 dark:text-blue-300">{t.appTitle}</h1>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
+            <InstallPrompt />
             <Button variant="ghost" size="icon" onClick={() => setMenuOpen(!menuOpen)} className="md:hidden">
               <Menu />
             </Button>
@@ -573,6 +576,8 @@ export default function WeatherApp() {
             ) : currentWeather ? (
               <div>
                 <WeatherCard weather={currentWeather} />
+
+                {forecast && <TemperatureChart hourlyData={forecast.hourly} dailyData={forecast.daily} />}
 
                 <Tabs defaultValue="hourly" className="mt-6">
                   <TabsList className="grid w-full grid-cols-2">
