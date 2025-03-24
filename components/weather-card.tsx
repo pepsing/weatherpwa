@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Sunrise, Sunset, Droplets, Wind } from "lucide-react"
 import { useLanguage } from "@/contexts/language-context"
+import { getWeatherDescription } from "@/lib/utils"
 
 interface WeatherCardProps {
   weather: {
@@ -28,7 +29,7 @@ interface WeatherCardProps {
 }
 
 export default function WeatherCard({ weather }: WeatherCardProps) {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
 
   const getWeatherIcon = (iconCode: string) => {
     return `https://openweathermap.org/img/wn/${iconCode}@4x.png`
@@ -53,7 +54,7 @@ export default function WeatherCard({ weather }: WeatherCardProps) {
           <div className="flex items-center mt-4 md:mt-0">
             <img
               src={getWeatherIcon(weather.weather[0].icon) || "/placeholder.svg"}
-              alt={weather.weather[0].main}
+              alt={weather.weather[0].description}
               className="w-20 h-20"
             />
             <div className="ml-2">
